@@ -1,0 +1,25 @@
+{
+  "pluginAlias": "Kiwi",
+  "pluginType": "platform",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "username": {
+        "title": "username",
+        "type": "string",
+        "required": true
+      },
+      "password": {
+        "title": "password",
+        "type": "string",
+        "required": true
+      },
+      "interval": {
+        "title": "interval",
+        "type": "integer",
+        "required": false,
+        "default": 600000
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "name": "homebridge-kiwi",
+  "version": "1.0.0",
+  "description": "Kiwi locks plugin for Homebridge.",
+  "main": "dist/index.js",
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "homebridge-kiwi",
+    "kiwi",
+    "smart home"
+  ],
+  "engines": {
+    "homebridge": ">=0.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dimonnwc3/homebridge-kiwi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dimonnwc3/homebridge-kiwi/issues"
+  },
+  "author": "Dmitrii Solovev <dimonnwc3@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "homebridge -D -U ./homebridge -P ./",
+    "build": "tsc",
+    "lint": "eslint \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.{ts,json}\"",
+    "prepublish": "npm run build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "eslint"
+    ]
+  },
+  "prettier": {
+    "semi": false,
+    "trailingComma": "all"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "plugin:@typescript-eslint/recommended",
+      "standard",
+      "prettier",
+      "prettier/@typescript-eslint"
+    ],
+    "rules": {
+      "@typescript-eslint/no-explicit-any": [
+        "off"
+      ],
+      "@typescript-eslint/no-use-before-define": [
+        "error",
+        {
+          "functions": false,
+          "classes": false
+        }
+      ]
+    },
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "env": {
+      "node": true
+    }
+  },
+  "dependencies": {
+    "@sindresorhus/is": "^2.1.0",
+    "got": "^10.6.0",
+    "humps": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/humps": "^1.1.3",
+    "@types/node": "^13.7.7",
+    "@typescript-eslint/eslint-plugin": "^2.22.0",
+    "@typescript-eslint/parser": "^2.22.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "homebridge": "^0.4.52",
+    "prettier": "^1.19.1",
+    "typescript": "^3.8.3"
+  }
+}
