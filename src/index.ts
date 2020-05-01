@@ -1,36 +1,36 @@
 import { Api } from "./kiwi-api"
 import { Sensor } from "./kiwi-api/api.interface"
-import { Config } from "./config"
 import { pluginName, platformName } from "./constants"
+import {
+  API,
+  DynamicPlatformPlugin,
+  PlatformConfig,
+  PlatformAccessory,
+  Service,
+  Logger,
+  CharacteristicEventTypes,
+  CharacteristicValue,
+  CharacteristicSetCallback,
+} from "homebridge"
 
-let Accessory: any
-let Service: any
-let Characteristic: any
-let UUIDGen: any
-
-function plugin(homebridge: any): void {
-  Accessory = homebridge.platformAccessory
-
-  Service = homebridge.hap.Service
-  Characteristic = homebridge.hap.Characteristic
-  UUIDGen = homebridge.hap.uuid
-
-  homebridge.registerPlatform(pluginName, platformName, KiwiPlatform, true)
+function plugin(homebridge: API): void {
+  homebridge.registerPlatform(pluginName, platformName, KiwiPlatform)
 }
 
-export class KiwiPlatform {
+export class KiwiPlatform implements DynamicPlatformPlugin {
+  public readonly PlatformAccessory = this.api.platformAccessory
+
   private readonly kiwiApi: Api
   private readonly pollingIntervalDuration: number
   private pollingInterval: NodeJS.Timer | null = null
 
-  private accessories: any[]
+  private accessories: PlatformAccessory[]
 
-  private readonly api: any
-  private readonly log: any
-
-  public constructor(log: any, config: Config, api: any) {
-    this.log = log
-    this.api = api
+  public constructor(
+    public readonly log: Logger,
+    public readonly config: PlatformConfig,
+    public readonly api: API,
+  ) {
     this.accessories = []
     this.pollingIntervalDuration = config.interval || 600000
 
@@ -83,7 +83,7 @@ export class KiwiPlatform {
     this.accessories = newAccessories
 
     accessoriesToAdd.forEach((a) => {
-      this.log(`Add accessory: ${a.displayName}`)
+      this.log.info(`Add accessory: ${a.displayName}`)
       this.initAccesoryServices(a)
     })
 
@@ -94,7 +94,7 @@ export class KiwiPlatform {
     )
 
     accessoriesToRemove.forEach((a) =>
-      this.log(`Remove accessory: ${a.displayName}`),
+      this.log.info(`Remove accessory: ${a.displayName}`),
     )
 
     this.api.unregisterPlatformAccessories(
@@ -104,53 +104,67 @@ export class KiwiPlatform {
     )
   }
 
-  private createAccesoryFromSensor(sensor: Sensor): any {
-    const uuid = UUIDGen.generate(`${platformName}:${sensor.sensorId}`)
+  private createAccesoryFromSensor = (sensor: Sensor): PlatformAccessory => {
+    const uuid = this.api.hap.uuid.generate(
+      `${platformName}:${sensor.sensorId}`,
+    )
 
-    const accessory = new Accessory(sensor.customerName || sensor.name, uuid)
+    const accessory = new this.PlatformAccessory(
+      sensor.customerName || sensor.name,
+      uuid,
+    )
 
     accessory.context.sensor = sensor
 
     return accessory
   }
 
-  public configureAccessory(accessory: any): void {
-    this.log(`Initialize accessory: ${accessory.displayName}`)
+  public configureAccessory(accessory: PlatformAccessory): void {
+    this.log.info(`Initialize accessory: ${accessory.displayName}`)
 
     this.initAccesoryServices(accessory)
 
     this.accessories.push(accessory)
   }
 
-  private initAccesoryServices(accessory: any): void {
-    const sensor: Sensor = accessory.context.sensor
-
-    const manufacturerService = accessory.getService(
-      Service.AccessoryInformation,
+  getOrCreateSwitchService(accessory: PlatformAccessory): Service {
+    return (
+      accessory.getService(this.api.hap.Service.Switch) ||
+      accessory.addService(this.api.hap.Service.Switch)
     )
-
-    manufacturerService
-      .setCharacteristic(Characteristic.Manufacturer, "Kiwi")
-      .setCharacteristic(Characteristic.Model, sensor.hardwareType)
-      .setCharacteristic(Characteristic.SerialNumber, sensor.sensorId)
-
-    const switchService =
-      accessory.getService(Service.Switch) ||
-      accessory.addService(Service.Switch)
-
-    switchService.setCharacteristic(Characteristic.On, false)
-
-    switchService
-      .getCharacteristic(Characteristic.On)
-      .on("set", this.onSwitchServiceSet(accessory))
   }
 
-  private onSwitchServiceSet(accessory: any) {
+  private initAccesoryServices(accessory: PlatformAccessory): void {
+    const sensor: Sensor = accessory.context.sensor
+
+    const manufacturerService =
+      accessory.getService(this.api.hap.Service.AccessoryInformation) ||
+      accessory.addService(this.api.hap.Service.AccessoryInformation)
+
+    manufacturerService
+      .setCharacteristic(this.api.hap.Characteristic.Manufacturer, "Kiwi")
+      .setCharacteristic(this.api.hap.Characteristic.Model, sensor.hardwareType)
+      .setCharacteristic(
+        this.api.hap.Characteristic.SerialNumber,
+        sensor.sensorId,
+      )
+
+    const switchService = this.getOrCreateSwitchService(accessory)
+
+    switchService.setCharacteristic(this.api.hap.Characteristic.On, false)
+
+    switchService
+      .getCharacteristic(this.api.hap.Characteristic.On)
+      .on(CharacteristicEventTypes.SET, this.onSwitchServiceSet(accessory))
+  }
+
+  private onSwitchServiceSet(accessory: PlatformAccessory) {
     return async (
-      state: boolean,
-      callback: (err?: Error | null) => void,
+      state: CharacteristicValue,
+      callback: CharacteristicSetCallback,
     ): Promise<void> => {
-      const switchService = accessory.getService(Service.Switch)
+      const switchService = this.getOrCreateSwitchService(accessory)
+
       const sensor: Sensor = accessory.context.sensor
 
       if (!state) {
@@ -167,7 +181,11 @@ export class KiwiPlatform {
         callback(err)
       } finally {
         setTimeout(
-          () => switchService.setCharacteristic(Characteristic.On, false),
+          () =>
+            switchService.setCharacteristic(
+              this.api.hap.Characteristic.On,
+              false,
+            ),
           1000,
         ).unref()
       }
