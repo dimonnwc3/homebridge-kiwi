@@ -73,16 +73,16 @@ export class KiwiPlatform {
     const newAccessories = sensors.map(this.createAccesoryFromSensor)
 
     const accessoriesToAdd = newAccessories.filter(
-      a => !this.accessories.map(a => a.UUID).includes(a.UUID),
+      (a) => !this.accessories.map((a) => a.UUID).includes(a.UUID),
     )
 
     const accessoriesToRemove = this.accessories.filter(
-      a => !newAccessories.map(a => a.UUID).includes(a.UUID),
+      (a) => !newAccessories.map((a) => a.UUID).includes(a.UUID),
     )
 
     this.accessories = newAccessories
 
-    accessoriesToAdd.forEach(a => {
+    accessoriesToAdd.forEach((a) => {
       this.log(`Add accessory: ${a.displayName}`)
       this.initAccesoryServices(a)
     })
@@ -93,7 +93,7 @@ export class KiwiPlatform {
       accessoriesToAdd,
     )
 
-    accessoriesToRemove.forEach(a =>
+    accessoriesToRemove.forEach((a) =>
       this.log(`Remove accessory: ${a.displayName}`),
     )
 
