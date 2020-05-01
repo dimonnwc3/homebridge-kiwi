@@ -1,4 +1,4 @@
-import got, { Got, Response, CancelableRequest } from "got"
+import got, { Got, AfterResponseHook } from "got"
 import humps from "humps"
 import {
   Sensor,
@@ -27,28 +27,28 @@ export class Api {
     this.username = username
     this.password = password
 
+    const afterResponseHook: AfterResponseHook = async (
+      response,
+      retryWithMergedOptions,
+    ) => {
+      if (response.statusCode === 401) {
+        await this.createSession()
+
+        return retryWithMergedOptions({
+          headers: {
+            ...this.getSessionKeyHeader(),
+          },
+        })
+      }
+
+      return response
+    }
+
     this.http = got.extend({
       prefixUrl: "https://api.kiwi.ki",
       mutableDefaults: true,
       hooks: {
-        afterResponse: [
-          async (
-            response,
-            retryWithMergedOptions,
-          ): Promise<CancelableRequest<Response> | Response> => {
-            if (response.statusCode === 401) {
-              await this.createSession()
-
-              return retryWithMergedOptions({
-                headers: {
-                  ...this.getSessionKeyHeader(),
-                },
-              })
-            }
-
-            return response
-          },
-        ],
+        afterResponse: [afterResponseHook],
       },
     })
   }
@@ -66,7 +66,7 @@ export class Api {
   public async createSession(): Promise<Session> {
     const res = await this.http<CreateSessionResponseBody>({
       method: "POST",
-      url: "/v1/session",
+      url: "v1/session",
       responseType: "json",
       json: {
         username: this.username,
@@ -84,7 +84,7 @@ export class Api {
   public async getSensorList(): Promise<GetSensorListResult> {
     const res = await this.http<GetSensorListResponseBody>({
       method: "GET",
-      url: "/v1/sensors",
+      url: "v1/sensors",
       responseType: "json",
       headers: {
         ...this.getSessionKeyHeader(),
@@ -102,7 +102,7 @@ export class Api {
   public async openSensor(sensorId: number): Promise<OpenSensorResponseBody> {
     const res = await this.http<OpenSensorResponseBody>({
       method: "POST",
-      url: `/v1/sensors/${sensorId}/act/open`,
+      url: `v1/sensors/${sensorId}/act/open`,
       responseType: "json",
       headers: {
         ...this.getSessionKeyHeader(),
