@@ -1,13 +1,3 @@
-export interface CreateSessionResponseBody {
-  status: string
-  result: CreateSessionResponseBodyResult
-}
-
-export interface CreateSessionResponseBodyResult {
-  sessionKey: string
-  session: Session
-}
-
 export interface Session {
   sessionKey: string
   enabled: string
@@ -19,19 +9,40 @@ export interface Session {
   language: string
 }
 
-export interface GetSensorListResponseBody {
-  status: string
-  result: GetSensorListResponseBodyResult
+export interface CreateSessionResponseBodyResult {
+  sessionKey: string
+  session: Session
 }
 
-export interface GetSensorListResponseBodyResult {
-  sensors: Sensor[]
-  totalResults: number
-  pageSize: number
-  pageNumber: number
-  orderBy: string
-  sortBy: string
-  customAttributes: any[]
+export interface CreateSessionResponseBody {
+  status: string
+  result: CreateSessionResponseBodyResult
+}
+
+export enum HardwareType {
+  UzHandleKiwiDoorHub = "UZ_HANDLE_KIWI_DOOR_HUB", // eslint-disable-line no-unused-vars
+  UzKnobKiwiDoorIntegration = "UZ_KNOB_KIWI_DOOR_INTEGRATION", // eslint-disable-line no-unused-vars
+}
+
+export enum HighestPermission {
+  IsHost = "IS_HOST", // eslint-disable-line no-unused-vars
+}
+
+export interface Owner {
+  name: null
+  userId: null
+  lastname: null
+  username: null
+}
+export interface Address {
+  street: string
+  postalCode: string
+  city: string
+  state: string
+  country: string
+  lat: number
+  lng: number
+  specifier: string
 }
 
 export interface Sensor {
@@ -49,32 +60,19 @@ export interface Sensor {
   owner: Owner
   isOwner: boolean
 }
-
-export interface Address {
-  street: string
-  postalCode: string
-  city: string
-  state: string
-  country: string
-  lat: number
-  lng: number
-  specifier: string
+export interface GetSensorListResponseBodyResult {
+  sensors: Sensor[]
+  totalResults: number
+  pageSize: number
+  pageNumber: number
+  orderBy: string
+  sortBy: string
+  customAttributes: any[]
 }
 
-export enum HardwareType {
-  UzHandleKiwiDoorHub = "UZ_HANDLE_KIWI_DOOR_HUB",
-  UzKnobKiwiDoorIntegration = "UZ_KNOB_KIWI_DOOR_INTEGRATION",
-}
-
-export enum HighestPermission {
-  IsHost = "IS_HOST",
-}
-
-export interface Owner {
-  name: null
-  userId: null
-  lastname: null
-  username: null
+export interface GetSensorListResponseBody {
+  status: string
+  result: GetSensorListResponseBodyResult
 }
 
 export interface OpenSensorResponseBody {

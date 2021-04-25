@@ -1,11 +1,11 @@
-import got, { Got, AfterResponseHook } from "got"
+import got, { AfterResponseHook, Got } from "got"
 import humps from "humps"
 import {
+  CreateSessionResponseBody,
+  GetSensorListResponseBody,
+  OpenSensorResponseBody,
   Sensor,
   Session,
-  GetSensorListResponseBody,
-  CreateSessionResponseBody,
-  OpenSensorResponseBody,
 } from "./api.interface"
 
 interface SessionKeyHeader {

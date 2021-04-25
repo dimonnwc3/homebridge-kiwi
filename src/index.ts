@@ -1,17 +1,17 @@
-import { Api } from "./kiwi-api"
-import { Sensor } from "./kiwi-api/api.interface"
-import { pluginName, platformName } from "./constants"
 import {
   API,
-  DynamicPlatformPlugin,
-  PlatformConfig,
-  PlatformAccessory,
-  Service,
-  Logger,
   CharacteristicEventTypes,
-  CharacteristicValue,
   CharacteristicSetCallback,
+  CharacteristicValue,
+  DynamicPlatformPlugin,
+  Logger,
+  PlatformAccessory,
+  PlatformConfig,
+  Service,
 } from "homebridge"
+import { platformName, pluginName } from "./constants"
+import { Api } from "./kiwi-api"
+import { Sensor } from "./kiwi-api/api.interface"
 
 function plugin(homebridge: API): void {
   homebridge.registerPlatform(pluginName, platformName, KiwiPlatform)

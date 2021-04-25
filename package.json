@@ -67,6 +67,9 @@
     "plugins": [
       "@typescript-eslint"
     ],
+    "globals": {
+      "NodeJS": "readonly"
+    },
     "env": {
       "node": true
     }
