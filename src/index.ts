@@ -146,7 +146,7 @@ export class KiwiPlatform implements DynamicPlatformPlugin {
       .setCharacteristic(this.api.hap.Characteristic.Model, sensor.hardwareType)
       .setCharacteristic(
         this.api.hap.Characteristic.SerialNumber,
-        sensor.sensorId,
+        String(sensor.sensorId),
       )
 
     const switchService = this.getOrCreateSwitchService(accessory)

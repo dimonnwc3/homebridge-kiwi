@@ -1,2 +1,2 @@
-export const pluginName = "kiwi-platform"
+export const pluginName = "homebridge-kiwi"
 export const platformName = "KiwiPlatform"
