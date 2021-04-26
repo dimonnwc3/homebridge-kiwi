@@ -86,6 +86,10 @@ export class Api {
       method: "GET",
       url: "v1/sensors",
       responseType: "json",
+      searchParams: humps.decamelizeKeys({ pageSize: 100 }) as Record<
+        string,
+        string | number
+      >,
       headers: {
         ...this.getSessionKeyHeader(),
       },
