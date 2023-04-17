@@ -20,3 +20,9 @@ Exposes kiwi locks as switch accessories.
 This plugin polls Kiwi API to refresh accessories.
 
 You can change polling interval for kiwi locks by changing `interval` config value.
+
+## Check my mobile apps
+
+[https://meterable.app](https://meterable.app)
+
+[https://www.testframe.app](https://www.testframe.app)
