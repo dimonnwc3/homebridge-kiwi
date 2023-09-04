@@ -1,6 +1,6 @@
 {
   "name": "homebridge-kiwi",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Kiwi locks plugin for Homebridge.",
   "main": "dist/index.js",
   "keywords": [
